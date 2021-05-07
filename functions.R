@@ -14,7 +14,7 @@ dgp_homoskedastic <- function(G,N_g=30,
                 b_1=1){
   # FUNCTION DESCRIPTION   - - - - - - - -
   
-  # This function codes for the data-generating process as defined in Cameron, Gelbach and Miller (2008).
+    # This function codes for the data-generating process as defined in Cameron, Gelbach and Miller (2008).
   # Errors are independent across clusters but correlated within clusters
   # Errors are normally distributed and homoskedastic.
   # We assume same number of units N_g per cluster
@@ -42,12 +42,13 @@ dgp_homoskedastic <- function(G,N_g=30,
   # OUTPUT - - - - - - - - - - - - - - - -
   
   return(data.frame("y"=y_ig,
-                    "x"=x_ig))
+                    "x"=x_ig,
+                    "g"=rep(seq(1:G), each=N_g)))
   
 }
 
 dgp_heteroskedastic <- function(G,N_g=30,
-                              b_0 = 0, 
+                              b_0 = 1, 
                               b_1=1){
   # FUNCTION DESCRIPTION   - - - - - - - -
   
@@ -76,12 +77,49 @@ dgp_heteroskedastic <- function(G,N_g=30,
   x_ig = z_g + z_ig
   y_ig = b_0 + b_1*x_ig + u_ig
   
-  # OUTPUT - - - - - - - - - - - - - - - -
+    # OUTPUT - - - - - - - - - - - - - - - -
   
   return(data.frame("y"=y_ig,
-              "x"=x_ig))
+                    "x"=x_ig,
+                    "g"=rep(seq(1:G), each=N_g)))
 }
 
 # 02. CLUSTER-ROBUST ESTIMATORS ----------------------------------------------------------
+betaH = function(data){
+  # FUNCTION DESCRIPTION - - - - - -
+  
+  # This function returns the beta_hat estimate
+  
+  # BETA ESTIMATION - - - - - - - -
+  return(solve(t(data$x)%*%data$x) %*%t(data$x)%*%data$y)
+}
+
+varCR <- function(data){
+  # FUNCTION DESCRIPTION - - - - - -
+  
+  # This function returns the CRVE
+  
+  # SETTING PARAMETERS - - - - - - -
+  
+  G = max(data$g)
+  x = data$x
+  beta_hat = betaH(data)
+  
+  # VARIANCE ESTIMATION - - - - - -
+  
+  return(solve(t(x)%*% x) %*% 
+    sum(sapply(1:G,function(g){
+    x_g = data$x[data$g==g]
+    u_g = data$y[data$g==g] - x_g %*% beta_hat
+    return(t(x_g)%*%u_g%*%t(u_g)%*%x_g)
+  })) %*%  solve(t(x)%*% x) )
+
+} 
 
 
+waldCR <- function(data,beta_null=1){
+  return((betaH(data)-beta_null)%*%
+           solve(sqrt(varCR(data))))
+}
+
+waldCR(data,1)
