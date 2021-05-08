@@ -9,6 +9,9 @@
 # sets wd as the path in which script is
 setwd(dirname(rstudioapi::getSourceEditorContext()$path)) 
 source("functions.R")
+if(!("clubSandwich"%in%installed.packages()[,'Package'])){
+  install.packages('clubSandwich')
+}
 library("clubSandwich")
 
 
@@ -18,7 +21,7 @@ mCarlo = 100 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
 clusters = c(5,10,15,20,25,30) # Number of clusters to be tested
 thresh = 1.96 # Significance level for rejection rate
-
+N_g = 30 # umber of observation per cluster
 # HOMOSKEDACTIC DGP
 # Creating empty list if not yet in the environment
 if(!exists("results_hoc")){
@@ -46,7 +49,7 @@ for (G in clusters){
   
   for (it in 1:mCarlo) {# Start of Monte Carlo iteration
     # Random data generation process
-    data = dgp_homoskedastic(G=G,N_g=30)
+    data = dgp_homoskedastic(G=G,N_g=N_g)
   
     # Estimation of regression:
     reg = lm(y~x-1,data=data)
