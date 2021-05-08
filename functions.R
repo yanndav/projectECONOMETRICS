@@ -196,6 +196,20 @@ varCR <- function(data){
 
 } 
 
+waldOLS <- function(reg,beta_null=1){
+  if(!is.data.frame(reg)){
+    tempo = summary(reg)$coefficients
+    beta = tempo["x","Estimate"]
+    se = tempo["x","Std. Error"]
+  }else{
+    beta = reg[1,"beta"]
+    se = reg[1,"SE"]
+  }
+  
+  
+  return((beta-beta_null)/se)
+}
+
 
 waldCR <- function(data,beta_null=1){
   return((betaH(data)-beta_null)%*%
