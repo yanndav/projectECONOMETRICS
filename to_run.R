@@ -188,21 +188,5 @@ for (G in clusters){
 }
 saveRDS(object = results_hoc, 'results_hoc_pairs_t.RDS')
 
-# Printing results_hoc
-results_hoc = readRDS('results_hoc_pairs_t.RDS')
-table_results_hoc = do.call(rbind,lapply(clusters, function(c){
-  tempo = sapply(estimators_wald,function(res){
-    return(mean(results_hoc[[paste(c)]][[res]][["rejection"]]))
-  })
-  tempo = t(as.data.frame(tempo))
-  return(data.frame("n_cluster"=c,tempo,row.names = NULL))
-}))
-print(table_results_hoc)
-
-
-
-
-restricted_OLS(data)
-
 # 03. EXTENSION WITH SKEWED ESTIMATOR -------------------------------------
 
