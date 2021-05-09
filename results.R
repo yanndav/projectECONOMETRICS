@@ -22,6 +22,7 @@ print(table_results_hoc)
 
 
 
-write.table(table_results_hoc)[2:ncol(table_results_hoc),], 
-file = "output/blp_endline.tex",eol='\\\\', sep='&',quote = F,row.names = T,
+write.table(t(table_results_hoc)[2:ncol(table_results_hoc),],
+            file = "output/homoske_norma.tex", eol='\\\\',
+            sep='&',quote = F,row.names = F,
             col.names = F,na="")
