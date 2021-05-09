@@ -173,7 +173,7 @@ betaH = function(data){
   # BETA ESTIMATION - - - - - - - -
   return(solve(t(data$x)%*%data$x) %*%t(data$x)%*%data$y)
 }
-
+data = data_r
 varCR <- function(data){
   # FUNCTION DESCRIPTION - - - - - -
   
@@ -190,7 +190,8 @@ varCR <- function(data){
   return(solve(t(x)%*% x) %*% 
     sum(sapply(1:G,function(g){
     x_g = data$x[data$g==g]
-    u_g = (G/(G-1))*data$y[data$g==g] - x_g %*% beta_hat
+    u_g = (G/(G-1))*(data$y[data$g==g] - x_g %*% beta_hat)
+    
     return(t(x_g)%*%u_g%*%t(u_g)%*%x_g)
   })) %*%  solve(t(x)%*% x) )
 
@@ -228,4 +229,15 @@ varJACK <- function(data){
   })))
 
   
-  }
+}
+
+
+restricted_OLS <- function(data, beta_null=1){
+  data$yr = data$y - beta_null * data$x
+  reg_r = summary(lm(yr ~ 1, data = data))
+  beta_r = reg_r$coefficients["(Intercept)","Estimate"]
+  residuals_r = reg_r$residuals
+  return(list("beta_r"=beta_r,
+              "residuals_r"=residuals_r))
+}
+
