@@ -31,7 +31,7 @@ if(!exists("results_hoc")){
 # results_hoc to be estimated:
 for (G in clusters){
   # Initialising results_hoc storage if empty list
-  if(length(results_hoc)==0){
+  if(length(results_hoc[[paste(G)]])==0){
     results_hoc[[paste(G)]][["ols"]] = list("rejection" = c(),
                                         "wald" = c())
     results_hoc[[paste(G)]][["ols_Bt"]] = list("rejection" = c(),
@@ -145,7 +145,7 @@ results_hoc = readRDS('results_hoc_pairs_t.RDS')
 boot_results_hoc = c('ols','ols_Bt','crve','crve_Bt','cr3_Bt','cr3')
 table_results_hoc = do.call(rbind,lapply(clusters, function(c){
   tempo = sapply(boot_results_hoc,function(res){
-    return(mean(results_hoc[[paste(k)]][[res]][["rejection"]]))
+    return(mean(results_hoc[[paste(c)]][[res]][["rejection"]]))
   })
   tempo = t(as.data.frame(tempo))
   return(data.frame("n_cluster"=c,tempo,row.names = NULL))
