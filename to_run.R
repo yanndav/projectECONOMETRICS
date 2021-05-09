@@ -129,7 +129,7 @@ for (G in clusters){
                            g=data$g,
                            y=beta_r*data$x + wild_p * data_b$ur)
       
-      wild_resi = c(wild_resi,
+      boot_wild = c(boot_wild,
                     abs(waldCR(data_r2, beta_null = beta_null)))
    
   }
@@ -175,13 +175,13 @@ for (G in clusters){
     }
     
     # Wild variance:
-    wild_resi <- sort(wild_resi)
-    cv_wild_resi <- wild_resi[floor(bStrap*0.95)]
+    boot_wild <- sort(boot_wild)
+    cv_boot_wild<- boot_wild[floor(bStrap*0.95)]
     results_hoc[[paste(G)]][["wild_Bt"]][["wald"]] = c(results_hoc[[paste(G)]][["wild_Bt"]][["wald"]],
-                                                       cv_wild_resi)
+                                                       cv_boot_wild)
     if (is.nan(wald_CRVE) == 0) {
       results_hoc[[paste(G)]][["wild_Bt"]][["rejection"]] = c(results_hoc[[paste(G)]][["wild_Bt"]][["rejection"]],
-                                                              as.integer(wald_CRVE>cv_wild_resi))
+                                                              as.integer(wald_CRVE>cv_boot_wild))
     }
     
   }

@@ -173,7 +173,7 @@ betaH = function(data){
   # BETA ESTIMATION - - - - - - - -
   return(solve(t(data$x)%*%data$x) %*%t(data$x)%*%data$y)
 }
-data = data_r
+
 varCR <- function(data){
   # FUNCTION DESCRIPTION - - - - - -
   
