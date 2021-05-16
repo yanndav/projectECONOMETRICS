@@ -174,62 +174,25 @@ betaH = function(data){
   return(solve(t(data$x)%*%data$x) %*%t(data$x)%*%data$y)
 }
 
-varCR <- function(data){
-  # FUNCTION DESCRIPTION - - - - - -
-  
-  # This function returns the CRVE
-  
-  # SETTING PARAMETERS - - - - - - -
-  
-  G = max(data$g)
-  x = data$x
-  beta_hat = betaH(data)
-  
-  # VARIANCE ESTIMATION - - - - - -
-  
-  return(solve(t(x)%*% x) %*% 
-    sum(sapply(1:G,function(g){
-    x_g = data$x[data$g==g]
-    u_g = (G/(G-1))*(data$y[data$g==g] - x_g %*% beta_hat)
-    
-    return(t(x_g)%*%u_g%*%t(u_g)%*%x_g)
-  })) %*%  solve(t(x)%*% x) )
 
-} 
 
-waldOLS <- function(reg,beta_null=1){
-  if(!is.data.frame(reg)){
+wald <- function(reg,beta_null=1,cluster="",data=NULL){
+  if(cluster==""){
     tempo = summary(reg)$coefficients
     beta = tempo["x","Estimate"]
     se = tempo["x","Std. Error"]
   }else{
+    reg = coef_test(reg, df = data, 
+              vcov = vcovCR(reg, 
+                            type = cluster,
+                            cluster = data$g))
+    
     beta = reg[1,"beta"]
     se = reg[1,"SE"]
   }
-  
-  
-  return((beta-beta_null)/se)
+  return((beta-beta_null)^2/(se^2))
 }
 
-
-waldCR <- function(data,beta_null=1){
-  return((betaH(data)-beta_null)%*%
-           solve(sqrt(varCR(data))))
-}
-
-
-varJACK <- function(data){
-  G=max(data$g)
-  
-  return(((G-1)/G)*
-           sum(sapply(1:G, function(g){
-    betahat = betaH(data)
-    beta_ghat = betaH(data[data$g!=g,])
-    return((beta_ghat-betahat)^2)
-  })))
-
-  
-}
 
 
 restricted_OLS <- function(data, beta_null=1){

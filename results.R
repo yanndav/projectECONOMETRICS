@@ -54,3 +54,4 @@ write.table(hoc_tex[,c('Method',seq(5,30,5))],
             file = "output/homoske_norma.tex", eol='\\\\',
             sep='&',quote = F,row.names = F,
             col.names = F,na="")
+  

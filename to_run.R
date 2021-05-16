@@ -19,9 +19,11 @@ library("clubSandwich")
 # Setting parameters
 mCarlo = 10 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
-clusters = c(5,10,15,20,25,30) # Number of clusters to be tested
+clusters = c(5,10 #,15,20,25,30
+             ) # Number of clusters to be tested
 N_g = 30 # number of observation per cluster
 beta_null = 1
+
 # HOMOSKEDACTIC DGP
 # Creating empty list if not yet in the environment
 if(!exists("results_hoc")){
@@ -45,6 +47,8 @@ for (G in clusters){
   
   
   for (it in 1:mCarlo) {# Start of Monte Carlo iteration
+    print(it)
+    set.seed(it)
     # Random data generation process
     data = dgp_homoskedastic(G=G,N_g=N_g)
     thresh = qchisq(0.95,df=1) # Significance level for rejection rate
@@ -52,23 +56,22 @@ for (G in clusters){
     
     # Estimation of regression:
     reg = lm(y~x-1,data=data)
-    
+    beta_null_b = betaH(data)
     
     # Basic ols variance
-    wald_OLS = abs(waldOLS(reg, beta_null = 1))
+    wald_OLS = wald(reg)
     results_hoc[[paste(G)]][["ols"]][["wald"]] = c(results_hoc[[paste(G)]][["ols"]][["wald"]],
                                                wald_OLS)
     results_hoc[[paste(G)]][["ols"]][["rejection"]] = c(results_hoc[[paste(G)]][["ols"]][["rejection"]],
                                                as.integer(wald_OLS>thresh))
     # CRVE variance estimator
-    wald_CRVE = abs(waldCR(data, beta_null = beta_null))
+    wald_CRVE = wald(reg, cluster = "CR1",data=data)
     results_hoc[[paste(G)]][["crve"]][["wald"]] = c(results_hoc[[paste(G)]][["crve"]][["wald"]],
                                                 wald_CRVE)
     results_hoc[[paste(G)]][["crve"]][["rejection"]] = c(results_hoc[[paste(G)]][["crve"]][["rejection"]],
                                                 as.integer(wald_CRVE>thresh))
     # CR3 variance estimator
-    wald_CR3 = abs(waldOLS(coef_test(reg, df = data, vcov = vcovCR(reg, type = "CR3",cluster = data$g)),
-                           beta_null = beta_null))
+    wald_CR3 = wald(reg, cluster = "CR3",data=data)
     results_hoc[[paste(G)]][["cr3"]][["wald"]] = c(results_hoc[[paste(G)]][["cr3"]][["wald"]],
                                                wald_CR3)
     results_hoc[[paste(G)]][["cr3"]][["rejection"]] = c(results_hoc[[paste(G)]][["cr3"]][["rejection"]],
@@ -77,7 +80,7 @@ for (G in clusters){
     # Restricted beta and associated residuals
     restrict = restricted_OLS(data)
     data$ur = restrict[['residuals_r']]
-  
+    beta_r = restrict[['beta_r']]
     # Initialisation of storage for monte carlo
     boot_ols = c()
     boot_crve = c()
@@ -85,40 +88,44 @@ for (G in clusters){
     boot_resi = c()
     boot_wild = c()
     
+   
+    
     for (b in 1:bStrap) {
+      set.seed(it*b)
       # Random sample of the clusters, with replacement
       
       index_b <- sample(G,G,replace=TRUE)
       data_b <- do.call(rbind,lapply(index_b,function(k){
         return(data[data$g==k ,])}))
   
+      while(length(unique(data_b$g))==1){
+        index_b <- sample(G,G,replace=TRUE)
+        data_b <- do.call(rbind,lapply(index_b,function(k){
+          return(data[data$g==k ,])}))
+      }
       # Estimation of regression:
       reg = lm(y~x-1,data=data_b)
       
       # Basic ols variance
-      boot_ols = c(boot_ols, abs(waldOLS(reg, beta_null = betaH(data))))
+      boot_ols = c(boot_ols, wald(reg, beta_null = beta_null_b,data=data_b))
       
       # CRVE variance estimator
       boot_crve = c(boot_crve,
-                    abs(waldCR(data_b, beta_null = betaH(data))))
+                    wald(reg, beta_null = beta_null_b,cluster = "CR1",data=data_b))
       
-      # CR3 variance estimator
+            # CR3 variance estimator
       boot_cr3 = c(boot_cr3,
-                   abs(waldOLS(coef_test(reg, df = data_b, 
-                                         vcov = vcovCR(reg, 
-                                                       type = "CR3",
-                                                       cluster = data_b$g)),
-                       beta_null = betaH(data))))
-      
+                     wald(reg, beta_null = beta_null_b,cluster = "CR3",data=data_b))
+    
       
       # Residuals boostrap
-      beta_r = restrict[['beta_r']]
       data_r = data.frame(x=data$x,
                           g=data$g,
                           y=beta_r*data$x+data_b$ur)
       
+      reg_re = lm(y~x-1,data=data_r)
       boot_resi = c(boot_resi,
-                    abs(waldCR(data_r, beta_null = beta_null)))
+                    wald(reg_re, cluster = "CR1",data=data_r))
       
       
       # Wild boostrap
@@ -129,9 +136,10 @@ for (G in clusters){
       data_r2 = data.frame(x=data$x,
                            g=data$g,
                            y=beta_r*data$x + wild_p * data$ur)
+      reg_r2 = lm(y~x-1,data=data_r2)
       
       boot_wild = c(boot_wild,
-                    abs(waldCR(data_r2, beta_null = beta_null)))
+                    wald(reg_r2, cluster = "CR1",data=data_r2))
    
   }
   # Asymptotic refinement moment
