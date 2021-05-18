@@ -17,9 +17,9 @@ library("clubSandwich")
 
 # 01. results_hoc REPLICATION -------------------------------------------------
 # Setting parameters
-mCarlo = 10 # Number of Monte Carlo Iteration
+mCarlo = 100 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
-clusters = c(5,10 #,15,20,25,30
+clusters = c(5,10 ,15,20,25,30
              ) # Number of clusters to be tested
 N_g = 30 # number of observation per cluster
 beta_null = 1
