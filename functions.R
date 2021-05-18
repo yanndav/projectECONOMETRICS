@@ -23,13 +23,13 @@ dgp_homoskedastic <- function(G,N_g=30,
   
   ## Error part
   # Correlation of errors within each cluster
-  e_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  e_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of error
   e_ig = rnorm(n=N_g*G, mean=0, sd=1)
   
   ## Covariates part 
   # Correlation of covariates within each cluster
-  z_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  z_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of covariates
   z_ig = rnorm(n=N_g*G, mean=0, sd=1)
   
@@ -61,13 +61,13 @@ dgp_heteroskedastic <- function(G,N_g=30,
   
   ## Covariates part 
   # Correlation of covariates within each cluster
-  z_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  z_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of covariates
   z_ig = rnorm(n=N_g*G, mean=0, sd=1)
   
   ## Error part
   # Correlation of errors within each cluster
-  e_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  e_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of error: heteroskedastic
   e_ig = rnorm(n=N_g*G, mean=0, sd=9 * (z_g + z_ig)^2)
   
@@ -101,13 +101,13 @@ dgp_homoskedastic_skewed <- function(G,N_g=30,
   
   ## Error part
   # Correlation of errors within each cluster
-  e_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  e_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of error
   e_ig = rnorm(n=N_g*G, mean=0, sd=1)
   
   ## Covariates part 
   # Correlation of covariates within each cluster
-  z_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  z_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of covariates
   z_ig = rnorm(n=N_g*G, mean=0, sd=1)
   
@@ -141,13 +141,13 @@ dgp_heteroskedastic_skewed <- function(G,N_g=30,
   
   ## Covariates part 
   # Correlation of covariates within each cluster
-  z_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  z_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of covariates
   z_ig = rnorm(n=N_g*G, mean=0, sd=1)
   
   ## Error part
   # Correlation of errors within each cluster
-  e_g = as.vector(replicate(n = G,rnorm(n=N_g, mean=0, sd=1)))
+  e_g = as.vector(rep(rnorm(n=G, mean=0, sd=1),each=N_g))
   # Individual part of error: heteroskedastic
   e_ig = rnorm(n=N_g*G, mean=0, sd=9 * (z_g + z_ig)^2)
   
