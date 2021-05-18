@@ -17,7 +17,7 @@ names <- c('Assume i.i.d.',' ',
            'Residual cluster bootstrap-t','',
            'Wild cluster bootstrap-t','')
 
-results_hoc = readRDS('results_hoc_pairs_t.RDS')
+# results_hoc = readRDS('results_hoc_pairs_t.RDS')
 
 # Printing results_hoc
 table_results_hoc = lapply(clusters, function(c){
@@ -43,7 +43,7 @@ table_results_hoc = lapply(clusters, function(c){
 
 hoc_tex = with(table_results_hoc, table_results_hoc[order(rank, rank),]) %>% 
   mutate_if(is.numeric, round, digits=3) %>% 
-  mutate(across(`5`:`30`, 
+  mutate(across(`5`:`5`, 
          ~ifelse(method == "se",paste0("(",.x,")"),.x)))
 
 

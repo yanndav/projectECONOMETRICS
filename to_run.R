@@ -19,10 +19,11 @@ library("clubSandwich")
 # Setting parameters
 mCarlo = 10 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
-clusters = c(5,10 #,15,20,25,30
+clusters = c(5 #,10 #,15,20,25,30
              ) # Number of clusters to be tested
 N_g = 30 # number of observation per cluster
-beta_null = 1
+beta_null = 1 # Beta null
+thresh = 1.96 # Significance level for rejection rate
 
 # HOMOSKEDACTIC DGP
 # Creating empty list if not yet in the environment
@@ -34,7 +35,7 @@ estimators_wald = c('ols','ols_Bt','crve','crve_Bt','cr3_Bt','cr3',
                      'resi_Bt','wild_Bt')
 
 # results_hoc to be estimated:
-for (G in clusters){
+  for (G in clusters){
   
   # Initialising results_hoc storage if empty list
   if(length(results_hoc[[paste(G)]])==0){
@@ -51,11 +52,10 @@ for (G in clusters){
     set.seed(it)
     # Random data generation process
     data = dgp_homoskedastic(G=G,N_g=N_g)
-    thresh = qchisq(0.95,df=1) # Significance level for rejection rate
-    
     
     # Estimation of regression:
     reg = lm(y~x-1,data=data)
+    
     beta_null_b = betaH(data)
     
     # Basic ols variance
@@ -78,9 +78,11 @@ for (G in clusters){
                                                as.integer(wald_CR3>thresh))
     
     # Restricted beta and associated residuals
-    restrict = restricted_OLS(data)
-    data$ur = restrict[['residuals_r']]
-    beta_r = restrict[['beta_r']]
+    reg_r = restriktor(reg, constraints = "x==1")
+    temp = summary(reg_r)
+    data$ur = temp$residuals
+    beta_r = temp$coefficients['x','Estimate']
+    
     # Initialisation of storage for monte carlo
     boot_ols = c()
     boot_crve = c()
@@ -107,7 +109,8 @@ for (G in clusters){
       reg = lm(y~x-1,data=data_b)
       
       # Basic ols variance
-      boot_ols = c(boot_ols, wald(reg, beta_null = beta_null_b,data=data_b))
+      boot_ols = c(boot_ols, 
+                   wald(reg, beta_null = beta_null_b,data=data_b))
       
       # CRVE variance estimator
       boot_crve = c(boot_crve,
@@ -120,7 +123,7 @@ for (G in clusters){
       
       # Residuals boostrap
       data_r = data.frame(x=data$x,
-                          g=data$g,
+                          g=data_b$g,
                           y=beta_r*data$x+data_b$ur)
       
       reg_re = lm(y~x-1,data=data_r)
@@ -195,6 +198,7 @@ for (G in clusters){
     
   }
 }
+results_hoc
 
 saveRDS(object = results_hoc, 'results_hoc_pairs_t.RDS')
 

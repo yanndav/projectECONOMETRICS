@@ -190,17 +190,10 @@ wald <- function(reg,beta_null=1,cluster="",data=NULL){
     beta = reg[1,"beta"]
     se = reg[1,"SE"]
   }
-  return((beta-beta_null)^2/(se^2))
+  return(abs((beta-beta_null)/se))
 }
 
 
 
-restricted_OLS <- function(data, beta_null=1){
-  data$yr = data$y - beta_null * data$x
-  reg_r = summary(lm(yr ~ 1, data = data))
-  beta_r = reg_r$coefficients["(Intercept)","Estimate"]
-  residuals_r = reg_r$residuals
-  return(list("beta_r"=beta_r,
-              "residuals_r"=residuals_r))
-}
+
 
