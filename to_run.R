@@ -13,18 +13,19 @@ if(!("clubSandwich"%in%installed.packages()[,'Package'])){
   install.packages('clubSandwich')
 }
 library("clubSandwich")
-
+if(!("restriktor"%in%installed.packages()[,'Package'])){
+  install.packages('restriktor')
+}
+library("restriktor")
 
 # 01. results_hoc REPLICATION -------------------------------------------------
 # Setting parameters
 mCarlo = 100 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
-<<<<<<< HEAD
-clusters = c(5 #,10 #,15,20,25,30
-=======
+
 clusters = c(5,10 ,15,20,25,30
->>>>>>> 2cfcfcd21f8ee6f2a46360b3b9c27aff9c8434c9
-             ) # Number of clusters to be tested
+
+                          ) # Number of clusters to be tested
 N_g = 30 # number of observation per cluster
 beta_null = 1 # Beta null
 thresh = 1.96 # Significance level for rejection rate
