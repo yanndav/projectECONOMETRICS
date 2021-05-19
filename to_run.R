@@ -13,10 +13,7 @@ if(!("clubSandwich"%in%installed.packages()[,'Package'])){
   install.packages('clubSandwich')
 }
 library("clubSandwich")
-<<<<<<< HEAD
 
-=======
->>>>>>> a72e35a7d710e3d3304703d833941e64ad064dab
 if(!("restriktor"%in%installed.packages()[,'Package'])){
   install.packages('restriktor')
 }
@@ -28,12 +25,7 @@ mCarlo = 100 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
 
 clusters = c(5,10 ,15,20,25,30
-<<<<<<< HEAD
-             ) # Number of clusters to be tested
-=======
-
                           ) # Number of clusters to be tested
->>>>>>> a72e35a7d710e3d3304703d833941e64ad064dab
 N_g = 30 # number of observation per cluster
 beta_null = 1 # Beta null
 thresh = 1.96 # Significance level for rejection rate
