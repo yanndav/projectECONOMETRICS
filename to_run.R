@@ -24,13 +24,8 @@ library("restriktor")
 mCarlo = 100 # Number of Monte Carlo Iteration
 bStrap= 399 # Number of Boostrap iterations
 
-clusters = c(5,10 ,15,20,25,30
-<<<<<<< HEAD
-                          ) # Number of clusters to be tested
-=======
-             ) # Number of clusters to be tested
+clusters = c(5,10 ,15,20,25,30             ) # Number of clusters to be tested
 
->>>>>>> 43689a62f9115ff2a021d44be6824dae7175ffcf
 N_g = 30 # number of observation per cluster
 beta_null = 1 # Beta null
 thresh = 1.96 # Significance level for rejection rate
