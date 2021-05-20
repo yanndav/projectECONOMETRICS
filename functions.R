@@ -114,7 +114,7 @@ dgp_homoskedastic_skewed <- function(G,N_g=30,
   # GENERATING OUTCOME VARIABLES - - - - -
   
   u_ig = e_g + e_ig
-  x_ig = exp(mu + sigma(z_g + z_ig))
+  x_ig = exp(mu + sigma*(z_g + z_ig))
   y_ig = b_0 + b_1*x_ig + u_ig
   
   # OUTPUT - - - - - - - - - - - - - - - -

@@ -404,7 +404,7 @@ for (G in clusters){
     print(it)
     set.seed(it)
     # Random data generation process
-    data = dgp_homoskedastic_skewed(G=G,N_g=N_g)
+    data = dgp_homoskedastic_skewed(G=G,N_g=N_g, mu=0,sigma=1)
     
     # Estimation of regression:
     reg = lm(y~x-1,data=data)
@@ -578,7 +578,7 @@ for (G in clusters){
     print(it)
     set.seed(it)
     # Random data generation process
-    data = dgp_homoskedastic_skewed(G=G,N_g=N_g)
+    data = dgp_homoskedastic_skewed(G=G,N_g=N_g,mu=0,sigma=1)
     
     # Estimation of regression:
     reg = lm(y~x,data=data)
