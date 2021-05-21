@@ -200,3 +200,93 @@ write.table(skhet_tex[,c('Method',seq(5,30,5))],
             sep='&',quote = F,row.names = F,
             col.names = F,na="")
 
+
+# HOMOSKEDASTICITY SKEWED SIGMA 2 RESULTS ---------------------------------------
+
+
+if(!exists("results_skhover")){
+  results_skhover = readRDS('results_skhover_pairs_t.RDS')
+}
+
+
+# Printing results_skhover
+table_results_skhover = lapply(clusters, function(c){
+  tempo = do.call(rbind,lapply(estimators_wald,function(res){
+    dt = data.frame(method = c("mean","se"),
+                    "wald"=rep(res,2),
+                    row.names = NULL)
+    rej = mean(results_skhover[[paste(c)]][[res]][["rejection"]])
+    R = length(results_skhover[[paste(c)]][[res]][["rejection"]])
+    dt[[paste(c)]] <- c(rej,
+                        sqrt(rej*(1-rej)/(R-1)))
+    
+    return(dt)
+  }))
+  return(tempo)
+}) %>% reduce(full_join, by=c("method","wald")) %>% 
+  mutate(rank = factor(paste0(wald,method),
+                       levels = paste0(rep(c('ols','crve','cr3',
+                                             'ols_Bt','crve_Bt','cr3_Bt',
+                                             'resi_Bt','wild_Bt'),each=2),
+                                       c('mean','se'))))
+
+
+skhover_tex = with(table_results_skhover, table_results_skhover[order(rank, rank),]) %>% 
+  mutate_if(is.numeric, round, digits=3) %>% 
+  mutate(across(`5`:`30`, 
+                ~ifelse(method == "se",paste0("(",.x,")"),.x)))
+
+
+
+skhover_tex["Method"] <- names
+
+write.table(skhover_tex[,c('Method',seq(5,30,5))],
+            file = "output/homo_skevery.tex", eol='\\\\',
+            sep='&',quote = F,row.names = F,
+            col.names = F,na="")
+
+
+# HETEROSKEDASTICITY SKEWED RESULTS ---------------------------------------
+
+
+if(!exists("results_skhetver")){
+  results_skhetver = readRDS('results_skhetver_pairs_t.RDS')
+}
+
+
+# Printing results_skhetver
+table_results_skhetver = lapply(clusters, function(c){
+  tempo = do.call(rbind,lapply(estimators_wald,function(res){
+    dt = data.frame(method = c("mean","se"),
+                    "wald"=rep(res,2),
+                    row.names = NULL)
+    rej = mean(results_skhetver[[paste(c)]][[res]][["rejection"]])
+    R = length(results_skhetver[[paste(c)]][[res]][["rejection"]])
+    dt[[paste(c)]] <- c(rej,
+                        sqrt(rej*(1-rej)/(R-1)))
+    
+    return(dt)
+  }))
+  return(tempo)
+}) %>% reduce(full_join, by=c("method","wald")) %>% 
+  mutate(rank = factor(paste0(wald,method),
+                       levels = paste0(rep(c('ols','crve','cr3',
+                                             'ols_Bt','crve_Bt','cr3_Bt',
+                                             'resi_Bt','wild_Bt'),each=2),
+                                       c('mean','se'))))
+
+
+skhetver_tex = with(table_results_skhetver, table_results_skhetver[order(rank, rank),]) %>% 
+  mutate_if(is.numeric, round, digits=3) %>% 
+  mutate(across(`5`:`30`, 
+                ~ifelse(method == "se",paste0("(",.x,")"),.x)))
+
+
+
+skhetver_tex["Method"] <- names
+
+write.table(skhetver_tex[,c('Method',seq(5,30,5))],
+            file = "output/hetero_skvery.tex", eol='\\\\',
+            sep='&',quote = F,row.names = F,
+            col.names = F,na="")
+
